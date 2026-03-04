@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kevin Su | 3D Character Artist</title>
+    
+    <!-- 引入 Google Fonts: Noto Sans JP (日文質感) & Orbitron (科技感英文) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 引入 Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind 自定義設定 (日系科技色彩系統) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tokyo: '#1A1B26',      // 帶藍調的深灰 (主背景)
+                        tokyoLighter: '#24283B',// 區塊背景
+                        miku: '#39C5BB',       // 初音綠 (主強調色)
+                        magenta: '#E33B82',    // 初音品紅 (警告/次要強調色)
+                        textmain: '#F8F8F2',   // 柔和白 (標題)
+                        textsub: '#A9B1D6',    // 科技藍灰 (內文)
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                        tech: ['Orbitron', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-miku': '0 0 15px rgba(57, 197, 187, 0.5)',
+                        'glow-magenta': '0 0 15px rgba(227, 59, 130, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- 自定義 CSS: 動畫、網格與特效 -->
+    <style>
+        body {
+            background-color: #1A1B26;
+            color: #A9B1D6;
+            overflow-x: hidden;
+        }
+
+        /* 背景網格線 (科技點陣感) */
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(57, 197, 187, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(57, 197, 187, 0.05) 1px, transparent 1px);
+        }
+
+        /* 45度斜切角 (Chamfered Edges) */
+        .clip-angled {
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+        .clip-angled-sm {
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        /* SVG 雷達光環旋轉動畫 */
+        @keyframes radar-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-radar {
+            animation: radar-spin 20s linear infinite;
+        }
+
+        /* 網頁滾動淡入效果 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 光劍進度條動畫 */
+        .lightsaber {
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* 隱藏橫向捲軸但保留滾動功能 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Modal 縮圖選中時的狀態 */
+        .thumb-active {
+            border-color: #39C5BB !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-miku selection:text-tokyo bg-grid relative">
+
+    <!-- 系統裝飾邊框 (螢幕邊緣的科幻感) -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-miku to-transparent z-50 opacity-50"></div>
+    <div class="fixed top-0 left-0 w-1 h-screen bg-gradient-to-b from-transparent via-magenta/30 to-transparent z-50 opacity-50"></div>
+
+    <!-- Navbar: 輕薄毛玻璃 -->
+    <nav class="fixed w-full z-40 top-0 transition-all duration-300 backdrop-blur-md bg-tokyo/60 border-b border-miku/20" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <!-- Logo & 系統代碼 -->
+                <a href="#" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 border border-miku flex items-center justify-center clip-angled-sm bg-tokyoLighter group-hover:bg-miku/10 transition-colors">
+                        <span class="font-tech text-miku font-bold text-lg leading-none">K</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-tech font-bold text-textmain tracking-widest text-sm">KEVIN.SU</span>
+                        <span class="font-tech text-[10px] text-miku opacity-70">SYS_ONLINE // V2.0</span>
+                    </div>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8 font-tech text-xs tracking-[0.2em]">
+                        <a href="#about" class="text-textsub hover:text-miku hover:drop-shadow-[0_0_8px_rgba(57,197,187,0.8)] transition-all flex items-center gap-1">
+                            <span class="text-magenta/70 text-[10px]">01.</span> ABOUT
+                        </a>
+                        <a href="#works" class="text-textsub hover:text-miku hover:drop-shadow-[0_0_8px_rgba(57,197,187,0.8)] transition-all flex items-center gap-1">
+                            <span class="text-magenta/70 text-[10px]">02.</span> WORKS
+                        </a>
+                        <a href="#skills" class="text-textsub hover:text-miku hover:drop-shadow-[0_0_8px_rgba(57,197,187,0.8)] transition-all flex items-center gap-1">
+                            <span class="text-magenta/70 text-[10px]">03.</span> SKILLS
+                        </a>
+                        <a href="#contact" class="text-textsub hover:text-miku hover:drop-shadow-[0_0_8px_rgba(57,197,187,0.8)] transition-all flex items-center gap-1">
+                            <span class="text-magenta/70 text-[10px]">04.</span> CONTACT
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button (加大觸控面積) -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-miku p-2 -mr-2 focus:outline-none hover:bg-white/5 rounded-lg transition-colors">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="md:hidden hidden bg-tokyo/98 border-b border-miku/30 backdrop-blur-xl absolute w-full shadow-2xl">
+            <div class="px-4 pt-4 pb-8 space-y-2 text-center font-tech tracking-widest text-sm">
+                <a href="#about" class="block px-3 py-4 text-textmain hover:text-miku hover:bg-white/5 transition-colors border-b border-white/5">ABOUT</a>
+                <a href="#works" class="block px-3 py-4 text-textmain hover:text-miku hover:bg-white/5 transition-colors border-b border-white/5">WORKS</a>
+                <a href="#skills" class="block px-3 py-4 text-textmain hover:text-miku hover:bg-white/5 transition-colors border-b border-white/5">SKILLS</a>
+                <a href="#contact" class="block px-3 py-4 text-textmain hover:text-miku hover:bg-white/5 transition-colors">CONTACT</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="about" class="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-16">
+
+        <!-- 中央呼吸發光體 (手機版縮小，避免過亮干擾閱讀) -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[600px] md:h-[600px] bg-miku/5 blur-[80px] md:blur-[120px] rounded-full animate-pulse pointer-events-none z-0"></div>
+
+        <!-- 巨大全息數據光環 (手機版縮小以適應螢幕) -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-10 pointer-events-none">
+            <svg class="w-[400px] h-[400px] md:w-[900px] md:h-[900px] animate-[spin_60s_linear_infinite]" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="48" stroke="#39C5BB" stroke-width="0.1" fill="none" stroke-dasharray="2 10" />
+                <circle cx="50" cy="50" r="38" stroke="#E33B82" stroke-width="0.1" fill="none" stroke-dasharray="1 5" opacity="0.6"/>
+                <circle cx="50" cy="50" r="28" stroke="#39C5BB" stroke-width="0.05" fill="none" />
+                <text x="50" y="8" fill="#39C5BB" font-size="1.5" text-anchor="middle" font-family="Orbitron" letter-spacing="0.2em" class="uppercase">Holographic_Environment_Active</text>
+                <text x="50" y="94" fill="#E33B82" font-size="1.5" text-anchor="middle" font-family="Orbitron" letter-spacing="0.2em" opacity="0.6">SYS_V2.0</text>
+            </svg>
+        </div>
+
+        <!-- 動態幾何粒子網路 (Canvas) -->
+        <canvas id="hero-canvas" class="absolute inset-0 z-0 opacity-60 pointer-events-none"></canvas>
+
+        <!-- 裝飾性系統文字 (左上與右下，保留給桌面版) -->
+        <div class="absolute top-32 left-8 hidden md:block font-tech text-[10px] text-miku/60 tracking-widest">
+            <p>DATA_STREAM: CONNECTED</p>
+            <p>LATENCY: 12ms</p>
+            <p>RENDER_ENGINE: ACTIVE</p>
+        </div>
+        <div class="absolute bottom-16 right-8 hidden md:block font-tech text-[10px] text-magenta/60 tracking-widest text-right">
+            <p>// INITIALIZING_SEQUENCE</p>
+            <p>TARGET_LOCKED</p>
+        </div>
+
+        <!-- Hero 內容 (調整手機版字體大小與間距) -->
+        <div id="hero-content" class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-start md:items-center md:text-center reveal active mt-10 transition-transform duration-200 ease-out" style="transform-style: preserve-3d;">
+            
+            <div class="flex items-center gap-3 mb-4 md:mb-6">
+                <div class="h-[1px] w-8 md:w-12 bg-miku"></div>
+                <span class="font-tech text-miku text-[10px] md:text-xs tracking-[0.3em] uppercase drop-shadow-glow-miku">3D Character Artist</span>
+                <div class="h-[1px] w-12 bg-miku hidden md:block"></div>
+            </div>
+
+            <!-- 手機版字體縮減為 text-4xl，避免斷行過於破碎 -->
+            <h1 class="font-tech text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-textmain mb-3 md:mb-4 tracking-tighter drop-shadow-lg leading-tight">
+                KEVIN SU
+            </h1>
+            
+            <h2 class="font-sans text-base sm:text-lg md:text-2xl text-textsub mb-8 font-light tracking-widest opacity-90 border-l-2 border-magenta pl-3 md:border-l-0 md:pl-0">
+                デジタルモデルの世界へようこそ
+                <span class="block text-xs sm:text-sm mt-1 md:mt-2 opacity-60 font-tech tracking-wider">Welcome to the digital model world.</span>
+            </h2>
+            
+            <!-- 初音綠發光按鈕 (手機版稍微縮小 padding) -->
+            <a href="#works" class="group relative inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 font-sans font-bold tracking-widest text-tokyo bg-miku clip-angled transition-all duration-300 hover:bg-transparent hover:text-miku hover:shadow-glow-miku border border-miku overflow-hidden mt-2 md:mt-4 w-full md:w-auto">
+                <span class="relative z-10 flex items-center gap-2 text-sm md:text-base">
+                    作品を見る <span class="font-tech text-[10px] md:text-xs opacity-70">VIEW WORKS</span> 
+                    <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </span>
+                <div class="absolute inset-0 h-full w-0 bg-white/20 group-hover:w-full transition-all duration-500 ease-out z-0"></div>
+            </a>
+        </div>
+    </header>
+
+    <!-- Portfolio Gallery Section (RWD 空間與吸附優化) -->
+    <section id="works" class="py-16 md:py-24 relative z-10 border-t border-white/5 bg-tokyo/80 backdrop-blur-sm overflow-hidden">
+        <div class="max-w-[90rem] mx-auto">
+            
+            <!-- 區塊標題 (手機版增加內距) -->
+            <div class="mb-8 md:mb-12 reveal flex flex-col md:flex-row md:items-end gap-2 md:gap-4 border-b border-miku/20 pb-4 px-4 sm:px-6 lg:px-8">
+                <h2 class="font-tech text-3xl md:text-4xl lg:text-5xl text-textmain font-bold">PORTFOLIO</h2>
+                <div class="flex flex-col">
+                    <span class="font-sans text-xs md:text-sm text-miku tracking-widest">// 01. アートワーク</span>
+                    <span class="font-tech text-[8px] md:text-[10px] text-textsub">SELECTED_WORKS_DATABASE</span>
+                </div>
+            </div>
+
+            <!-- 橫向滑動區塊容器 -->
+            <div class="relative group/slider">
+                
+                <!-- 左側滑動按鈕 -->
+                <button id="slider-prev" class="absolute left-4 top-1/2 -translate-y-1/2 z-30 hidden md:flex items-center justify-center w-12 h-12 bg-tokyo/80 border border-miku/50 text-miku clip-angled-sm backdrop-blur-md opacity-0 group-hover/slider:opacity-100 transition-all duration-300 hover:bg-miku hover:text-tokyo shadow-glow-miku cursor-pointer">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+
+                <!-- Scroll Container (手機版加入 px-4 內距，並使用 snap-center 讓卡片完美置中) -->
+                <div id="portfolio-slider" class="flex flex-nowrap gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar pb-8 pt-2 px-4 sm:px-6 lg:px-8">
+                    
+                    <!-- Card 1 -->
+                    <!-- 加入 onclick 事件，綁定 mock data 的 id -->
+                    <div onclick="openModal('cyber_samurai')" class="snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal cursor-pointer">
+                        <div class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo">
+                            <img src="https://images.unsplash.com/photo-1618519764620-7403abdbdf9e?q=80&w=800&auto=format&fit=crop" alt="Cyber Character" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/60 to-transparent backdrop-blur-[2px] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 md:p-8">
+                                <div class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                                    <h3 class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">CYBER_SAMURAI</h3>
+                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">CHARACTER_DESIGN</p>
+                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">ZBrush</span>
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Marvelous Designer</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 hidden md:block" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" pathLength="100" class="stroke-miku stroke-[4px] fill-transparent [stroke-dasharray:100] [stroke-dashoffset:100] group-hover:[stroke-dashoffset:0] transition-all duration-700 ease-out" />
+                        </svg>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div onclick="openModal('mecha_unit')" class="snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal cursor-pointer">
+                        <div class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo">
+                            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=800&auto=format&fit=crop" alt="Mecha Concept" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-105">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/60 to-transparent backdrop-blur-[2px] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 md:p-8">
+                                <div class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                                    <h3 class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">MECHA_UNIT_01</h3>
+                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">HARD_SURFACE</p>
+                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
+                                        <span class="border border-magenta/40 text-magenta px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Blender</span>
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Substance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 hidden md:block" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" pathLength="100" class="stroke-miku stroke-[4px] fill-transparent [stroke-dasharray:100] [stroke-dashoffset:100] group-hover:[stroke-dashoffset:0] transition-all duration-700 ease-out" />
+                        </svg>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div onclick="openModal('virtual_idol')" class="snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal cursor-pointer">
+                        <div class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo">
+                            <img src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=800&auto=format&fit=crop" alt="Anime Character" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/60 to-transparent backdrop-blur-[2px] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 md:p-8">
+                                <div class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                                    <h3 class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">VIRTUAL_IDOL</h3>
+                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">ANIME_STYLE</p>
+                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Maya</span>
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Pencil+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 hidden md:block" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" pathLength="100" class="stroke-miku stroke-[4px] fill-transparent [stroke-dasharray:100] [stroke-dashoffset:100] group-hover:[stroke-dashoffset:0] transition-all duration-700 ease-out" />
+                        </svg>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div onclick="openModal('neo_tokyo')" class="snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal cursor-pointer">
+                        <div class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo">
+                            <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=800&auto=format&fit=crop" alt="Environment Props" class="w-full h-full object-cover grayscale md:group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-105">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/60 to-transparent backdrop-blur-[2px] opacity-100 md:opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6 md:p-8">
+                                <div class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                                    <h3 class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">NEO_TOKYO_PROPS</h3>
+                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">ENVIRONMENT_ASSETS</p>
+                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
+                                        <span class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Unreal Engine</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 hidden md:block" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100%" height="100%" pathLength="100" class="stroke-miku stroke-[4px] fill-transparent [stroke-dasharray:100] [stroke-dashoffset:100] group-hover:[stroke-dashoffset:0] transition-all duration-700 ease-out" />
+                        </svg>
+                    </div>
+
+                    <!-- 預留透明區塊讓最後一個項目能對齊 -->
+                    <div class="snap-start flex-none w-[2vw] md:w-8"></div>
+                </div>
+
+                <!-- 右側滑動按鈕 -->
+                <button id="slider-next" class="absolute right-4 top-1/2 -translate-y-1/2 z-30 hidden md:flex items-center justify-center w-12 h-12 bg-tokyo/80 border border-miku/50 text-miku clip-angled-sm backdrop-blur-md opacity-0 group-hover/slider:opacity-100 transition-all duration-300 hover:bg-miku hover:text-tokyo shadow-glow-miku cursor-pointer">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                </button>
+
+            </div>
+            
+            <!-- 滑動提示 (手機版顯示) -->
+            <div class="mt-4 flex justify-center items-center gap-2 text-textsub text-[10px] font-tech md:hidden opacity-60">
+                <i data-lucide="arrow-left" class="w-3 h-3"></i>
+                SWIPE TO EXPLORE
+                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Skills & About Section -->
+    <section id="skills" class="py-16 md:py-24 bg-tokyoLighter relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-10 lg:gap-16">
+                
+                <!-- About (簡述) -->
+                <div class="lg:w-1/3 reveal">
+                    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end gap-1 md:gap-2 border-b border-miku/20 pb-3 md:pb-4">
+                        <h2 class="font-tech text-2xl md:text-3xl text-textmain font-bold">PROFILE</h2>
+                        <span class="font-sans text-[10px] md:text-xs text-miku tracking-widest">// 02. プロフィール</span>
+                    </div>
+                    <p class="font-sans text-textsub leading-relaxed mb-6 text-sm">
+                        精通日系二次元與科幻寫實風格的 3D 角色建模師。致力於將 2D 原畫的靈魂，精準轉化為具備高品質拓撲與完美貼圖的 3D 數位資產。
+                    </p>
+                    <div class="font-tech text-xs text-textmain space-y-2 border-l-2 border-miku pl-4 bg-tokyo p-4 clip-angled-sm">
+                        <p><span class="text-miku">CLASS:</span> Character Artist</p>
+                        <p><span class="text-miku">BASE:</span> Taipei, TW</p>
+                        <p><span class="text-miku">EXP:</span> 5+ Years</p>
+                    </div>
+                </div>
+
+                <!-- Skills (光劍進度條) -->
+                <div class="lg:w-2/3 reveal">
+                    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end gap-1 md:gap-2 border-b border-miku/20 pb-3 md:pb-4">
+                        <h2 class="font-tech text-2xl md:text-3xl text-textmain font-bold">SKILLS_MATRIX</h2>
+                        <span class="font-sans text-[10px] md:text-xs text-miku tracking-widest">// 03. スキル</span>
+                    </div>
+                    
+                    <div class="space-y-6 md:space-y-8">
+                        <!-- Skill 1 -->
+                        <div>
+                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
+                                <span class="text-textmain flex items-center gap-2"><i data-lucide="user" class="w-3 h-3 md:w-4 md:h-4 text-miku"></i> CHARACTER_MODELING</span>
+                                <span class="text-miku">95%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
+                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber" data-width="95%"></div>
+                            </div>
+                            <p class="font-sans text-[10px] text-textsub mt-1">ZBrush / Maya / Blender</p>
+                        </div>
+
+                        <!-- Skill 2 -->
+                        <div>
+                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
+                                <span class="text-textmain flex items-center gap-2"><i data-lucide="droplet" class="w-3 h-3 md:w-4 md:h-4 text-magenta"></i> TEXTURING & SHADING</span>
+                                <span class="text-miku">88%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
+                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber" data-width="88%"></div>
+                            </div>
+                            <p class="font-sans text-[10px] text-textsub mt-1">Substance Painter / NPR Shader</p>
+                        </div>
+
+                        <!-- Skill 3 -->
+                        <div>
+                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
+                                <span class="text-textmain flex items-center gap-2"><i data-lucide="monitor-play" class="w-3 h-3 md:w-4 md:h-4 text-miku"></i> REALTIME_RENDERING</span>
+                                <span class="text-miku">80%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
+                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber" data-width="80%"></div>
+                            </div>
+                            <p class="font-sans text-[10px] text-textsub mt-1">Unreal Engine 5 / Unity</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 md:py-24 bg-tokyo relative border-t border-miku/30 overflow-hidden">
+        <!-- 底部裝飾發光 -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-miku/10 blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto px-4 text-center reveal">
+            <h2 class="font-tech text-3xl md:text-4xl lg:text-5xl text-textmain font-bold mb-1 md:mb-2">INITIALIZE_CONTACT</h2>
+            <p class="font-sans text-miku tracking-widest text-[10px] md:text-sm mb-8 md:mb-12">// 04. コンタクト (聯絡我)</p>
+            
+            <!-- 加大手機版內距 (p-6 -> sm:p-8) 且加入 break-all 保護長信箱破版 -->
+            <div class="inline-block w-full sm:w-auto border border-white/10 bg-tokyoLighter/50 backdrop-blur-md clip-angled p-6 sm:p-8 md:p-12 mb-10 shadow-2xl">
+                <a href="mailto:contact@kevinsu.space" class="group flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-textmain hover:text-miku transition-colors text-lg sm:text-xl md:text-2xl font-tech tracking-wider mb-4 md:mb-6 break-all">
+                    <i data-lucide="mail" class="w-5 h-5 md:w-6 md:h-6 group-hover:animate-bounce text-miku"></i>
+                    contact@kevinsu.space
+                </a>
+                <p class="font-sans text-textsub text-xs md:text-sm">プロジェクトのご相談はお気軽にどうぞ。</p>
+                <p class="font-sans text-textsub text-xs md:text-sm mt-1">(歡迎隨時來信洽談專案合作)</p>
+            </div>
+
+            <!-- 社交連結 -->
+            <div class="flex items-center justify-center gap-4 md:gap-6">
+                <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo hover:shadow-glow-miku hover:border-miku clip-angled-sm transition-all duration-300">
+                    <i data-lucide="twitter" class="w-4 h-4 md:w-5 md:h-5"></i>
+                </a>
+                <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo hover:shadow-glow-miku hover:border-miku clip-angled-sm transition-all duration-300">
+                    <i data-lucide="palette" class="w-4 h-4 md:w-5 md:h-5"></i>
+                </a>
+                <a href="#" class="w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo hover:shadow-glow-miku hover:border-miku clip-angled-sm transition-all duration-300 group relative">
+                    <i data-lucide="pen-tool" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    <span class="absolute -bottom-6 text-[10px] font-tech text-miku opacity-0 md:group-hover:opacity-100 transition-opacity">PIXIV</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Lightbox Modal (彈出式細節視窗) -->
+    <div id="project-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-tokyo/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none">
+        
+        <!-- 關閉按鈕 -->
+        <button onclick="closeModal()" class="absolute top-4 right-4 md:top-8 md:right-8 z-50 text-miku hover:text-white transition-colors bg-tokyo/50 p-2 rounded-lg backdrop-blur-md border border-miku/30 hover:bg-miku hover:border-miku">
+            <i data-lucide="x" class="w-6 h-6 md:w-8 md:h-8"></i>
+        </button>
+        
+        <div class="w-full h-full max-w-7xl mx-auto p-4 sm:p-6 md:p-12 flex flex-col lg:flex-row gap-6 lg:gap-12 pt-16 md:pt-20 items-center justify-center">
+            
+            <!-- Left: Gallery Area -->
+            <div class="w-full lg:w-2/3 flex flex-col gap-4 h-[50vh] md:h-[65vh] lg:h-[80vh]">
+                <!-- 主大圖 -->
+                <div class="relative flex-1 bg-tokyoLighter clip-angled-sm border border-white/10 overflow-hidden group flex items-center justify-center shadow-2xl">
+                    <img id="modal-main-img" src="" class="w-full h-full object-contain transition-opacity duration-300" alt="Main Project Image">
+                    
+                    <!-- 左右切換按鈕 -->
+                    <button onclick="prevModalImage(event)" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-tokyo/80 border border-miku/50 text-miku w-10 h-10 md:w-12 md:h-12 flex items-center justify-center clip-angled-sm backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-miku hover:text-tokyo cursor-pointer shadow-glow-miku">
+                        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="nextModalImage(event)" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-tokyo/80 border border-miku/50 text-miku w-10 h-10 md:w-12 md:h-12 flex items-center justify-center clip-angled-sm backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-miku hover:text-tokyo cursor-pointer shadow-glow-miku">
+                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <!-- 縮圖列 -->
+                <div id="modal-thumbnails" class="h-16 md:h-24 shrink-0 flex gap-2 md:gap-4 overflow-x-auto hide-scrollbar snap-x pb-2 items-center">
+                    <!-- 動態由 JavaScript 生成縮圖 -->
+                </div>
+            </div>
+
+            <!-- Right: Info Area -->
+            <div class="w-full lg:w-1/3 flex flex-col max-h-[35vh] lg:max-h-none overflow-y-auto hide-scrollbar pb-8 lg:pb-0">
+                <span class="font-sans text-[10px] md:text-xs text-miku tracking-widest mb-2">// DETAILED_VIEW</span>
+                <h3 id="modal-title" class="font-sans text-2xl md:text-4xl text-textmain font-bold mb-1 drop-shadow-glow-miku uppercase">PROJECT TITLE</h3>
+                <p id="modal-category" class="font-tech text-xs md:text-sm text-textsub mb-4 md:mb-6">CATEGORY</p>
+                
+                <div id="modal-tags" class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mb-6">
+                    <!-- 動態生成標籤 -->
+                </div>
+                
+                <div class="w-12 h-[1px] bg-miku/50 mb-6 hidden lg:block"></div>
+                
+                <p id="modal-desc" class="font-sans text-xs md:text-sm text-textsub leading-relaxed border-l-2 border-magenta pl-3 lg:border-none lg:pl-0">
+                    DESCRIPTION_TEXT
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#12131A] pt-6 pb-8 md:py-6 border-t border-white/5 text-center relative z-10">
+        <p class="text-textsub text-[8px] md:text-[10px] font-tech tracking-[0.2em] md:tracking-[0.3em]">
+            &copy; 2026 KEVIN SU. SYSTEM_VER_2.0 <span class="text-miku">///</span> ALL RIGHTS RESERVED.
+        </p>
+    </footer>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // 初始化 Lucide 圖示
+        lucide.createIcons();
+
+        // --- Portfolio 專案資料 (Mock Data) ---
+        const projectData = {
+            'cyber_samurai': {
+                title: 'CYBER_SAMURAI',
+                category: 'CHARACTER_DESIGN',
+                tags: ['ZBrush', 'Marvelous Designer', 'Substance Painter'],
+                desc: '結合賽博龐克與傳統武士元素的角色設計。使用了 Marvelous Designer 進行布料解算的打樣，並在 ZBrush 中雕刻硬表面機甲與生化義體細節。這是一個兼具故事性與精密結構的作品。',
+                images: [
+                    'https://images.unsplash.com/photo-1618519764620-7403abdbdf9e?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1535295972055-1c762f4483e5?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop'
+                ]
+            },
+            'mecha_unit': {
+                title: 'MECHA_UNIT_01',
+                category: 'HARD_SURFACE',
+                tags: ['Blender', 'Substance Designer'],
+                desc: '追求真實重量感與機甲結構合理性的概念兵器模型。著重於硬表面的導角處理以及戰損邊緣的紋理細節。材質使用 Substance Designer 完全程序化生成。',
+                images: [
+                    'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1617791160536-598cf32026fb?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1633398361668-3e4b096f2e02?q=80&w=1200&auto=format&fit=crop'
+                ]
+            },
+            'virtual_idol': {
+                title: 'VIRTUAL_IDOL',
+                category: 'ANIME_STYLE',
+                tags: ['Maya', 'Pencil+ 4', 'Unity'],
+                desc: '以日系賽璐璐 (Cel-shading) 風格為核心開發的虛擬偶像 3D 模型。擁有完整的臉部 Blendshape 以及適用於即時動態捕捉 (Motion Capture) 的標準骨架。',
+                images: [
+                    'https://images.unsplash.com/photo-1620121692029-d088224ddc74?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1542621334-a254cf47733d?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1200&auto=format&fit=crop'
+                ]
+            },
+            'neo_tokyo': {
+                title: 'NEO_TOKYO_PROPS',
+                category: 'ENVIRONMENT_ASSETS',
+                tags: ['Unreal Engine 5', 'Maya', 'Quixel'],
+                desc: '建構未來都市所需的環境模組資產。此系列 Props 注重於即時渲染效能的優化（LOD與合理的拓撲結構），並利用 UE5 的 Nanite 與 Lumen 系統展現極致的光影效果。',
+                images: [
+                    'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop',
+                    'https://images.unsplash.com/photo-1618519764620-7403abdbdf9e?q=80&w=1200&auto=format&fit=crop'
+                ]
+            }
+        };
+
+        // --- Modal 控制邏輯 ---
+        let currentProjectKey = null;
+        let currentImageIndex = 0;
+        const modal = document.getElementById('project-modal');
+        const mainImg = document.getElementById('modal-main-img');
+        const thumbnailContainer = document.getElementById('modal-thumbnails');
+
+        // 打開 Modal
+        function openModal(projectKey) {
+            const data = projectData[projectKey];
+            if (!data) return;
+
+            currentProjectKey = projectKey;
+            currentImageIndex = 0;
+
+            // 填入文字資料
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-category').textContent = data.category;
+            document.getElementById('modal-desc').textContent = data.desc;
+
+            // 填入標籤
+            const tagsContainer = document.getElementById('modal-tags');
+            tagsContainer.innerHTML = '';
+            data.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'border border-miku/40 text-miku px-2 py-1 bg-tokyo/80 backdrop-blur-md clip-angled-sm';
+                span.textContent = tag;
+                tagsContainer.appendChild(span);
+            });
+
+            // 生成縮圖
+            generateThumbnails(data.images);
+            
+            // 載入第一張大圖
+            updateModalImage();
+
+            // 顯示 Modal (並鎖定背景滾動)
+            modal.classList.remove('hidden');
+            // 延遲一點點改變 opacity 以觸發 CSS 動畫
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100', 'pointer-events-auto');
+            }, 10);
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // 關閉 Modal
+        function closeModal() {
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            
+            // 等待動畫結束後再 hidden
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }, 300);
+        }
+
+        // 生成下方縮圖列
+        function generateThumbnails(images) {
+            thumbnailContainer.innerHTML = '';
+            images.forEach((src, index) => {
+                const btn = document.createElement('button');
+                btn.className = `w-16 md:w-24 h-full snap-center shrink-0 border-2 clip-angled-sm overflow-hidden transition-all duration-300 ${index === currentImageIndex ? 'thumb-active border-miku opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`;
+                btn.onclick = () => {
+                    currentImageIndex = index;
+                    updateModalImage();
+                };
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'w-full h-full object-cover';
+                btn.appendChild(img);
+                
+                thumbnailContainer.appendChild(btn);
+            });
+        }
+
+        // 更新大圖與縮圖狀態
+        function updateModalImage() {
+            const data = projectData[currentProjectKey];
+            if(!data) return;
+
+            // 加入淡出淡入效果
+            mainImg.style.opacity = '0';
+            setTimeout(() => {
+                mainImg.src = data.images[currentImageIndex];
+                mainImg.style.opacity = '1';
+            }, 150);
+
+            // 更新縮圖 active 狀態
+            Array.from(thumbnailContainer.children).forEach((btn, index) => {
+                if (index === currentImageIndex) {
+                    btn.classList.add('thumb-active', 'border-miku');
+                    btn.classList.remove('border-transparent', 'opacity-50');
+                } else {
+                    btn.classList.remove('thumb-active', 'border-miku');
+                    btn.classList.add('border-transparent', 'opacity-50');
+                }
+            });
+        }
+
+        // 上一張圖片
+        function prevModalImage(e) {
+            e.stopPropagation(); // 避免點擊按鈕時觸發其他事件
+            const data = projectData[currentProjectKey];
+            if (!data) return;
+            currentImageIndex = (currentImageIndex - 1 + data.images.length) % data.images.length;
+            updateModalImage();
+        }
+
+        // 下一張圖片
+        function nextModalImage(e) {
+            e.stopPropagation();
+            const data = projectData[currentProjectKey];
+            if (!data) return;
+            currentImageIndex = (currentImageIndex + 1) % data.images.length;
+            updateModalImage();
+        }
+
+        // --- 原本的其他邏輯保留區塊 ---
+
+        // 處理手機版選單開關
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        const mobileLinks = menu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // 網頁 Navbar 滾動效果 (增加背景不透明度與發光邊框)
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-tokyo/95', 'border-miku/50', 'shadow-glow-miku');
+                navbar.classList.remove('bg-tokyo/60', 'border-miku/20');
+            } else {
+                navbar.classList.add('bg-tokyo/60', 'border-miku/20');
+                navbar.classList.remove('bg-tokyo/95', 'border-miku/50', 'shadow-glow-miku');
+            }
+        });
+
+        // 處理 Portfolio 橫向滑動按鈕邏輯
+        const slider = document.getElementById('portfolio-slider');
+        const btnPrev = document.getElementById('slider-prev');
+        const btnNext = document.getElementById('slider-next');
+
+        if(slider && btnPrev && btnNext) {
+            // 設定點擊滑動距離
+            const scrollAmount = window.innerWidth < 768 ? window.innerWidth * 0.85 : window.innerWidth * 0.45;
+            
+            btnPrev.addEventListener('click', () => {
+                slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            });
+
+            btnNext.addEventListener('click', () => {
+                slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            });
+        }
+
+        // Scroll Reveal & 觸發光劍進度條動畫
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealCallback = function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    
+                    const sabers = entry.target.querySelectorAll('.lightsaber');
+                    if (sabers.length > 0) {
+                        sabers.forEach(saber => {
+                            const targetWidth = saber.getAttribute('data-width');
+                            setTimeout(() => {
+                                saber.style.width = targetWidth;
+                            }, 300);
+                        });
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // --- Hero 區塊 3D Parallax 滑鼠跟隨效果 (僅桌面版) ---
+        const heroSection = document.getElementById('about');
+        const heroContent = document.getElementById('hero-content');
+
+        if (heroSection && heroContent) {
+            heroSection.addEventListener('mousemove', (e) => {
+                if (window.innerWidth < 768) return; 
+                
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 120;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 120;
+                heroContent.style.transform = `perspective(2000px) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            });
+
+            heroSection.addEventListener('mouseleave', () => {
+                heroContent.style.transform = `perspective(2000px) rotateY(0deg) rotateX(0deg)`;
+            });
+        }
+
+        // --- Canvas 幾何粒子網路互動背景 ---
+        const canvas = document.getElementById('hero-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particlesArray = [];
+            let mouse = { x: null, y: null, radius: 150 };
+
+            window.addEventListener('mousemove', (event) => {
+                // 手機版不執行滑鼠連線特效以提升效能
+                if (window.innerWidth < 768) return;
+                mouse.x = event.x;
+                mouse.y = event.y;
+            });
+
+            window.addEventListener('mouseout', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticles();
+            });
+
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color, isCross) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                    this.isCross = isCross; 
+                }
+                draw() {
+                    ctx.beginPath();
+                    if (this.isCross) {
+                        ctx.moveTo(this.x - this.size * 2, this.y);
+                        ctx.lineTo(this.x + this.size * 2, this.y);
+                        ctx.moveTo(this.x, this.y - this.size * 2);
+                        ctx.lineTo(this.x, this.y + this.size * 2);
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    } else {
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                    }
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                    
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            function initParticles() {
+                particlesArray = [];
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                // 手機版降低粒子數量到 25，確保畫面清爽與滑動效能
+                const numberOfParticles = window.innerWidth < 768 ? 25 : 90;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = Math.random() * 1.5 + 0.5;
+                    let x = Math.random() * innerWidth;
+                    let y = Math.random() * innerHeight;
+                    let directionX = (Math.random() - 0.5) * 0.8;
+                    let directionY = (Math.random() - 0.5) * 0.8;
+                    let color = Math.random() > 0.1 ? 'rgba(57, 197, 187, 0.8)' : 'rgba(227, 59, 130, 0.8)';
+                    let isCross = Math.random() > 0.8; 
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color, isCross));
+                }
+            }
+
+            function connectParticles() {
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+                                       ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < 15000) {
+                            let opacityValue = 1 - (distance / 15000);
+                            ctx.strokeStyle = `rgba(57, 197, 187, ${opacityValue * 0.4})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                    
+                    if(mouse.x != null && window.innerWidth >= 768) {
+                        let dx = particlesArray[a].x - mouse.x;
+                        let dy = particlesArray[a].y - mouse.y;
+                        let distanceToMouse = Math.sqrt(dx * dx + dy * dy);
+                        if (distanceToMouse < mouse.radius) {
+                            ctx.strokeStyle = `rgba(227, 59, 130, ${0.5 * (1 - distanceToMouse/mouse.radius)})`; 
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateCanvas() {
+                requestAnimationFrame(animateCanvas);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connectParticles();
+            }
+
+            initParticles();
+            animateCanvas();
+        }
+    </script>
+</body>
+</html>
