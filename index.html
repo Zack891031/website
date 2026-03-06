@@ -113,23 +113,30 @@
         /* Modal 縮圖狀態 */
         .thumb-active { border-color: #39C5BB !important; opacity: 1 !important; }
 
-        /* 無限滾動 Marquee */
+        /* --- 修改：無限滾動 Marquee (增強硬體加速) --- */
         @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            /* 使用 translate3d 觸發 GPU 加速 */
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
         }
         .animate-marquee {
             animation: marquee 30s linear infinite;
             will-change: transform; /* 效能優化 */
+            /* 強制使用 GPU 渲染，避免與 scroll-snap 計算衝突 */
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            perspective: 1000px; 
         }
 
-        /* --- 全網頁捲動吸附 (Scroll Snapping) - 統一交由原生 CSS 處理，硬體加速最滑順 --- */
+        /* --- 修改：全網頁捲動吸附 (Scroll Snapping) 體驗優化 --- */
         html {
+            /* 恢復強制吸附，達成滑動一點即切換下一頁的效果 */
             scroll-snap-type: y mandatory;
         }
         header, section, footer {
             scroll-snap-align: start;
-            scroll-snap-stop: always;
+            scroll-snap-stop: always; /* 恢復每次只滑一頁 */
         }
 
         /* 客製化科技游標 (僅限電腦版顯示) */
@@ -279,7 +286,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <header id="about" class="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-12"> <!-- 增加 pb-12 避免內容被下方的 Marquee 擋住 -->
+    <header id="about" class="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-12">
 
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] md:w-[600px] md:h-[600px] bg-miku/5 blur-[80px] md:blur-[120px] rounded-full animate-pulse pointer-events-none z-0"></div>
 
@@ -732,7 +739,7 @@
             });
         });
 
-        // --- 3. 駭 অনুমোদন解碼文字特效 (Cyberpunk Text Scramble) ---
+        // --- 3. 駭客解碼文字特效 (Cyberpunk Text Scramble) ---
         const scrambleLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
         function triggerScramble(element) {
             if (!element) return;
@@ -760,9 +767,6 @@
                 iterations += 0.4; 
             }, 55); 
         }
-
-        // --- 4. JS 客製化平滑滾動 - 移除 ---
-        // 為了效能與手感，移除了客製化的 JS 滾動接管，全面改用硬體加速的 CSS Scroll Snap。
 
         // --- Scroll Reveal & 動畫觸發 ---
         const revealElements = document.querySelectorAll('.reveal');
