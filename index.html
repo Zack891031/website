@@ -163,16 +163,6 @@
         }
 
         /* --- 修改：全網頁捲動吸附 (Scroll Snapping) 體驗優化 --- */
-        html {
-            /* 手機版：改用溫和的 proximity，不會因為內容高度而卡死，方便自由滑動 */
-            scroll-snap-type: y proximity;
-        }
-
-        header,
-        section,
-        footer {
-            scroll-snap-align: start;
-        }
 
         @media (min-width: 768px) {
             html {
@@ -184,6 +174,7 @@
             section,
             footer {
                 /* 電腦版：限制每次只滑一頁 */
+                scroll-snap-align: start;
                 scroll-snap-stop: always;
             }
         }
@@ -362,9 +353,9 @@
                             class="text-textsub hover:text-miku transition-all flex items-center gap-1 hover-target">
                             <span class="text-magenta/70 text-[10px]">02.</span> WORKS
                         </a>
-                        <a href="#skills"
+                        <a href="#profile"
                             class="text-textsub hover:text-miku transition-all flex items-center gap-1 hover-target">
-                            <span class="text-magenta/70 text-[10px]">03.</span> SKILLS
+                            <span class="text-magenta/70 text-[10px]">03.</span> PROFILE
                         </a>
                         <a href="#contact"
                             class="text-textsub hover:text-miku transition-all flex items-center gap-1 hover-target">
@@ -521,145 +512,118 @@
                 </button>
 
                 <div id="portfolio-slider"
-                    class="flex flex-nowrap gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar pb-8 pt-2 px-4 sm:px-6 lg:px-8">
+                    class="flex flex-nowrap gap-4 md:gap-6 overflow-x-auto md:snap-x md:snap-mandatory scroll-smooth hide-scrollbar pb-8 pt-2 px-4 sm:px-6 lg:px-8">
 
                     <!-- Card 1 -->
                     <div onclick="openModal('cyber_samurai')"
-                        class="hover-target snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal">
-                        <div <div
-                            class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo pointer-events-none">
+                        class="hover-target md:snap-start flex-none w-[85vw] sm:w-[350px] md:w-[320px] lg:w-[310px] xl:w-[420px] group cursor-pointer bg-tokyoLighter clip-angled-sm border border-white/5 hover:border-miku/50 transition-colors reveal flex flex-col">
+                        <div
+                            class="relative w-full h-[320px] md:h-[450px] overflow-hidden bg-tokyo pointer-events-none shrink-0 border-b border-white/5 shadow-black/50 shadow-inner">
                             <img src="pics/LINE_ALBUM_1_260306_1.jpg" alt="Cyber Character"
                                 class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-transform">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/80 to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                                <div
-                                    class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                    <h3
-                                        class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">
-                                        CYBER_SAMURAI</h3>
-                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">CHARACTER_DESIGN
-                                    </p>
-                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">ZBrush</span>
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Marvelous
-                                            Designer</span>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="p-5 md:p-6 flex-grow flex flex-col justify-start">
+                            <h3
+                                class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku group-hover:text-magenta transition-colors">
+                                CYBER_SAMURAI</h3>
+                            <p class="font-tech text-xs md:text-sm text-textmain mb-4">CHARACTER_DESIGN</p>
+                            <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mt-auto">
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">ZBrush</span>
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Marvelous
+                                    Designer</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 2 -->
                     <div onclick="openModal('mecha_unit')"
-                        class="hover-target snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal">
+                        class="hover-target md:snap-start flex-none w-[85vw] sm:w-[350px] md:w-[320px] lg:w-[310px] xl:w-[420px] group cursor-pointer bg-tokyoLighter clip-angled-sm border border-white/5 hover:border-miku/50 transition-colors reveal flex flex-col">
                         <div
-                            class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo pointer-events-none">
+                            class="relative w-full h-[320px] md:h-[450px] overflow-hidden bg-tokyo pointer-events-none shrink-0 border-b border-white/5 shadow-black/50 shadow-inner">
                             <img src="pics/LINE_ALBUM_2_260306_7.jpg" alt="Mecha Concept"
-                                class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
-
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/80 to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                                <div
-                                    class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                    <h3
-                                        class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">
-                                        MECHA_UNIT_01</h3>
-                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">HARD_SURFACE</p>
-                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
-                                        <span
-                                            class="border border-magenta/40 text-magenta px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Blender</span>
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Substance</span>
-                                    </div>
-                                </div>
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
+                        </div>
+                        <div class="p-5 md:p-6 flex-grow flex flex-col justify-start">
+                            <h3
+                                class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku group-hover:text-magenta transition-colors">
+                                MECHA_UNIT_01</h3>
+                            <p class="font-tech text-xs md:text-sm text-textmain mb-4">HARD_SURFACE</p>
+                            <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mt-auto">
+                                <span
+                                    class="border border-magenta/40 text-magenta px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Blender</span>
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Substance</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 3 -->
                     <div onclick="openModal('virtual_idol')"
-                        class="hover-target snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal">
+                        class="hover-target md:snap-start flex-none w-[85vw] sm:w-[350px] md:w-[320px] lg:w-[310px] xl:w-[420px] group cursor-pointer bg-tokyoLighter clip-angled-sm border border-white/5 hover:border-miku/50 transition-colors reveal flex flex-col">
                         <div
-                            class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo pointer-events-none">
+                            class="relative w-full h-[320px] md:h-[450px] overflow-hidden bg-tokyo pointer-events-none shrink-0 border-b border-white/5 shadow-black/50 shadow-inner">
                             <img src="pics/LINE_ALBUM_3_260306_15.jpg" alt="Anime Character"
                                 class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-transform">
-
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/80 to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                                <div
-                                    class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                    <h3
-                                        class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">
-                                        VIRTUAL_IDOL</h3>
-                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">ANIME_STYLE</p>
-                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Maya</span>
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Pencil+</span>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="p-5 md:p-6 flex-grow flex flex-col justify-start">
+                            <h3
+                                class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku group-hover:text-magenta transition-colors">
+                                VIRTUAL_IDOL</h3>
+                            <p class="font-tech text-xs md:text-sm text-textmain mb-4">ANIME_STYLE</p>
+                            <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mt-auto">
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Maya</span>
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Pencil+</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 4 -->
                     <div onclick="openModal('neo_tokyo')"
-                        class="hover-target snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal">
+                        class="hover-target md:snap-start flex-none w-[85vw] sm:w-[350px] md:w-[320px] lg:w-[310px] xl:w-[420px] group cursor-pointer bg-tokyoLighter clip-angled-sm border border-white/5 hover:border-miku/50 transition-colors reveal flex flex-col">
                         <div
-                            class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo pointer-events-none">
+                            class="relative w-full h-[320px] md:h-[450px] overflow-hidden bg-tokyo pointer-events-none shrink-0 border-b border-white/5 shadow-black/50 shadow-inner">
                             <img src="pics/LINE_ALBUM_4_260306_24.jpg" alt="Environment Props"
-                                class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
-
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/80 to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                                <div
-                                    class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                    <h3
-                                        class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">
-                                        NEO_TOKYO_PROPS</h3>
-                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">
-                                        ENVIRONMENT_ASSETS</p>
-                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Unreal
-                                            Engine</span>
-                                    </div>
-                                </div>
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
+                        </div>
+                        <div class="p-5 md:p-6 flex-grow flex flex-col justify-start">
+                            <h3
+                                class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku group-hover:text-magenta transition-colors">
+                                NEO_TOKYO_PROPS</h3>
+                            <p class="font-tech text-xs md:text-sm text-textmain mb-4">ENVIRONMENT_ASSETS</p>
+                            <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mt-auto">
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Unreal
+                                    Engine</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 5 -->
                     <div onclick="openModal('neo_tokyo_2')"
-                        class="hover-target snap-center md:snap-start flex-none w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[30vw] group relative bg-tokyoLighter clip-angled-sm overflow-hidden border border-white/5 hover:border-miku/50 transition-colors reveal">
+                        class="hover-target md:snap-start flex-none w-[85vw] sm:w-[350px] md:w-[320px] lg:w-[310px] xl:w-[420px] group cursor-pointer bg-tokyoLighter clip-angled-sm border border-white/5 hover:border-miku/50 transition-colors reveal flex flex-col">
                         <div
-                            class="relative w-full h-[380px] md:h-[550px] overflow-hidden bg-tokyo pointer-events-none">
+                            class="relative w-full h-[320px] md:h-[450px] overflow-hidden bg-tokyo pointer-events-none shrink-0 border-b border-white/5 shadow-black/50 shadow-inner">
                             <img src="pics/LINE_ALBUM_5_260306_33.jpg" alt="Environment Props 02"
-                                class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
-
-                            <div
-                                class="absolute inset-0 bg-gradient-to-t from-tokyo via-tokyo/80 to-transparent opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 md:p-8">
-                                <div
-                                    class="transform translate-y-0 md:translate-y-8 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                                    <h3
-                                        class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku">
-                                        NEO_TOKYO_PROPS_02</h3>
-                                    <p class="font-tech text-xs md:text-sm text-textmain mb-3 md:mb-4">
-                                        ENVIRONMENT_ASSETS</p>
-                                    <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs">
-                                        <span
-                                            class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Unreal
-                                            Engine</span>
-                                    </div>
-                                </div>
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 will-change-[transform,filter]">
+                        </div>
+                        <div class="p-5 md:p-6 flex-grow flex flex-col justify-start">
+                            <h3
+                                class="font-sans text-xl md:text-2xl text-miku font-bold mb-1 md:mb-2 drop-shadow-glow-miku group-hover:text-magenta transition-colors">
+                                NEO_TOKYO_PROPS_02</h3>
+                            <p class="font-tech text-xs md:text-sm text-textmain mb-4">ENVIRONMENT_ASSETS</p>
+                            <div class="flex flex-wrap gap-2 font-tech text-[10px] md:text-xs mt-auto">
+                                <span
+                                    class="border border-miku/40 text-miku px-2 py-1 md:px-3 bg-tokyo/80 backdrop-blur-md clip-angled-sm">Unreal
+                                    Engine</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="snap-start flex-none w-[2vw] md:w-8"></div>
+                    <div class="md:snap-start flex-none w-[2vw] md:w-8"></div>
                 </div>
 
                 <button id="slider-next"
@@ -674,77 +638,46 @@
     <!-- Skills & About Section -->
     <section id="skills" class="py-16 md:py-24 bg-tokyoLighter relative border-t border-white/5">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col lg:flex-row gap-10 lg:gap-16">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 lg:gap-24">
 
-                <!-- About -->
-                <div class="lg:w-1/3 reveal">
-                    <div
-                        class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end gap-1 md:gap-2 border-b border-miku/20 pb-3 md:pb-4">
-                        <h2 class="font-tech text-2xl md:text-3xl text-textmain font-bold scramble-text"
-                            data-text="PROFILE">PROFILE</h2>
-                        <span class="font-sans text-[10px] md:text-xs text-miku tracking-widest">// 02. プロフィール</span>
-                    </div>
-                    <p class="font-sans text-textsub leading-relaxed mb-6 text-sm">
-                        精通日系二次元與科幻寫實風格的 3D 角色建模師。致力於將 2D 原畫的靈魂，精準轉化為具備高品質拓撲與完美貼圖的 3D 數位資產。
-                    </p>
-                    <div
-                        class="font-tech text-xs text-textmain space-y-2 border-l-2 border-miku pl-4 bg-tokyo p-4 clip-angled-sm">
-                        <p><span class="text-miku">CLASS:</span> Character Artist</p>
-                        <p><span class="text-miku">BASE:</span> Taipei, TW</p>
-                        <p><span class="text-miku">EXP:</span> 5+ Years</p>
+                <!-- Profile Image -->
+                <div
+                    class="w-48 h-48 md:w-64 md:h-64 shrink-0 rounded-full overflow-hidden border-2 border-miku/30 shadow-glow-miku relative group reveal">
+                    <img src="pics/LINE_ALBUM_1_260306_1.jpg" alt="Herbie Profile Picture"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-tokyo/10 group-hover:bg-transparent transition-colors duration-300">
                     </div>
                 </div>
 
-                <!-- Skills -->
-                <div class="lg:w-2/3 reveal">
+                <!-- Profile Text -->
+                <div class="flex-1 max-w-2xl reveal">
                     <div
-                        class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end gap-1 md:gap-2 border-b border-miku/20 pb-3 md:pb-4">
-                        <h2 class="font-tech text-2xl md:text-3xl text-textmain font-bold scramble-text"
-                            data-text="SKILLS_MATRIX">SKILLS_MATRIX</h2>
-                        <span class="font-sans text-[10px] md:text-xs text-miku tracking-widest">// 03. スキル</span>
+                        class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-end gap-1 md:gap-2 border-b border-miku/20 pb-3 md:pb-4 justify-center md:justify-start">
+                        <h2 class="font-tech text-2xl md:text-3xl text-textmain font-bold scramble-text text-center md:text-left"
+                            data-text="PROFILE">PROFILE</h2>
+                        <span
+                            class="font-sans text-[10px] md:text-xs text-miku tracking-widest text-center md:text-left">//
+                            02. プロフィール</span>
                     </div>
 
-                    <div class="space-y-6 md:space-y-8">
-                        <div>
-                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
-                                <span class="text-textmain flex items-center gap-2"><i data-lucide="user"
-                                        class="w-3 h-3 md:w-4 md:h-4 text-miku"></i> CHARACTER_MODELING</span>
-                                <span class="text-miku">95%</span>
-                            </div>
-                            <div
-                                class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
-                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber"
-                                    data-width="95%"></div>
-                            </div>
-                            <p class="font-sans text-[10px] text-textsub mt-1">ZBrush / Maya / Blender</p>
-                        </div>
+                    <p
+                        class="font-sans text-textmain leading-relaxed mb-6 text-sm md:text-base text-center md:text-left font-light tracking-wide">
+                        精通日系二次元與科幻寫實風格的 3D 角色建模師。致力於將 2D 原畫的靈魂，精準轉化為具備高品質拓撲與完美貼圖的 3D 數位資產。
+                    </p>
 
-                        <div>
-                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
-                                <span class="text-textmain flex items-center gap-2"><i data-lucide="droplet"
-                                        class="w-3 h-3 md:w-4 md:h-4 text-magenta"></i> TEXTURING & SHADING</span>
-                                <span class="text-miku">88%</span>
-                            </div>
-                            <div
-                                class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
-                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber"
-                                    data-width="88%"></div>
-                            </div>
-                            <p class="font-sans text-[10px] text-textsub mt-1">Substance Painter / NPR Shader</p>
+                    <div
+                        class="font-tech text-xs md:text-sm text-textsub py-4 md:py-6 border-t border-b border-white/5 flex flex-wrap justify-center md:justify-start gap-8 md:gap-16">
+                        <div class="text-center md:text-left">
+                            <span class="text-miku block mb-1">CLASS</span>
+                            <span class="text-textmain">Character Artist</span>
                         </div>
-
-                        <div>
-                            <div class="flex justify-between font-tech text-xs md:text-sm mb-2">
-                                <span class="text-textmain flex items-center gap-2"><i data-lucide="monitor-play"
-                                        class="w-3 h-3 md:w-4 md:h-4 text-miku"></i> REALTIME_RENDERING</span>
-                                <span class="text-miku">80%</span>
-                            </div>
-                            <div
-                                class="h-1.5 w-full bg-tokyo rounded-full overflow-hidden relative border border-white/5">
-                                <div class="absolute top-0 left-0 h-full bg-miku shadow-glow-miku lightsaber"
-                                    data-width="80%"></div>
-                            </div>
-                            <p class="font-sans text-[10px] text-textsub mt-1">Unreal Engine 5 / Unity</p>
+                        <div class="text-center md:text-left">
+                            <span class="text-miku block mb-1">BASE</span>
+                            <span class="text-textmain">Taipei, TW</span>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <span class="text-miku block mb-1">EXP</span>
+                            <span class="text-textmain">5+ Years</span>
                         </div>
                     </div>
                 </div>
@@ -761,7 +694,7 @@
         <div class="max-w-4xl mx-auto px-4 text-center reveal">
             <h2 class="font-tech text-3xl md:text-4xl lg:text-5xl text-textmain font-bold mb-1 md:mb-2 scramble-text"
                 data-text="INITIALIZE_CONTACT">INITIALIZE_CONTACT</h2>
-            <p class="font-sans text-miku tracking-widest text-[10px] md:text-sm mb-8 md:mb-12">// 04. コンタクト (聯絡我)</p>
+            <p class="font-sans text-miku tracking-widest text-[10px] md:text-sm mb-8 md:mb-12">// 03. コンタクト (聯絡我)</p>
 
             <div
                 class="inline-block w-full sm:w-auto border border-white/10 bg-tokyoLighter/50 backdrop-blur-md clip-angled p-6 sm:p-8 md:p-12 mb-10 shadow-2xl">
@@ -775,35 +708,40 @@
             </div>
 
             <div class="flex items-center justify-center gap-4 md:gap-6">
-                <a href="#"
-                    class="magnetic hover-target w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo shadow-glow-miku hover:border-miku clip-angled-sm transition-colors">
-                    <i data-lucide="twitter" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
-                </a>
-                <a href="#"
-                    class="magnetic hover-target w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo shadow-glow-miku hover:border-miku clip-angled-sm transition-colors">
-                    <i data-lucide="palette" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
-                </a>
-                <a href="#"
+                <a href="https://x.com/Herbie1205" target="_blank" rel="noopener noreferrer"
                     class="magnetic hover-target w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo shadow-glow-miku hover:border-miku clip-angled-sm transition-colors group relative">
-                    <i data-lucide="pen-tool" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
+                    <i data-lucide="twitter" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
                     <span
-                        class="absolute -bottom-6 text-[10px] font-tech text-miku opacity-0 md:group-hover:opacity-100 transition-opacity">PIXIV</span>
+                        class="absolute -bottom-6 text-[10px] font-tech text-miku opacity-0 md:group-hover:opacity-100 transition-opacity">X</span>
+                </a>
+                <a href="https://www.instagram.com/kevinsu321/" target="_blank" rel="noopener noreferrer"
+                    class="magnetic hover-target w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo shadow-glow-miku hover:border-miku clip-angled-sm transition-colors group relative">
+                    <i data-lucide="instagram" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
+                    <span
+                        class="absolute -bottom-6 text-[10px] font-tech text-miku opacity-0 md:group-hover:opacity-100 transition-opacity">IG</span>
+                </a>
+                <a href="https://www.facebook.com/herbie333/" target="_blank" rel="noopener noreferrer"
+                    class="magnetic hover-target w-10 h-10 md:w-12 md:h-12 bg-tokyoLighter border border-white/10 flex items-center justify-center text-textmain hover:bg-miku hover:text-tokyo shadow-glow-miku hover:border-miku clip-angled-sm transition-colors group relative">
+                    <i data-lucide="facebook" class="w-4 h-4 md:w-5 md:h-5 pointer-events-none"></i>
+                    <span
+                        class="absolute -bottom-6 text-[10px] font-tech text-miku opacity-0 md:group-hover:opacity-100 transition-opacity">FB</span>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Project Lightbox Modal -->
-    <div id="project-modal"
-        class="fixed inset-0 z-[100] hidden items-center justify-center bg-tokyo/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none">
+    <div id="project-modal" onclick="closeModal()"
+        class="fixed inset-0 z-[100] hidden items-center justify-center bg-tokyo/90 transition-all duration-300 opacity-0 pointer-events-none cursor-pointer"
+        style="background-image: radial-gradient(#39c5bb20 1px, transparent 1px); background-size: 3px 3px;">
 
         <button onclick="closeModal()"
-            class="magnetic hover-target absolute top-4 right-4 md:top-8 md:right-8 z-50 text-miku hover:text-white transition-colors bg-tokyo/50 p-2 rounded-lg backdrop-blur-md border border-miku/30 hover:bg-miku hover:border-miku">
+            class="magnetic hover-target absolute top-4 right-4 md:top-8 md:right-8 z-[110] text-miku hover:text-white transition-colors bg-tokyo/50 p-2 rounded-lg backdrop-blur-md border border-miku/30 hover:bg-miku hover:border-miku">
             <i data-lucide="x" class="w-6 h-6 md:w-8 md:h-8 pointer-events-none"></i>
         </button>
 
-        <div
-            class="w-full h-full max-w-7xl mx-auto p-4 sm:p-6 md:p-12 flex flex-col lg:flex-row gap-6 lg:gap-12 pt-16 md:pt-20 items-center justify-center">
+        <div onclick="event.stopPropagation()"
+            class="relative z-[105] w-full h-full max-w-7xl mx-auto p-4 sm:p-6 md:p-12 flex flex-col lg:flex-row gap-6 lg:gap-12 pt-16 md:pt-20 items-center justify-center cursor-default">
 
             <!-- Left: Gallery Area -->
             <div class="w-full lg:w-2/3 flex flex-col gap-4 h-[50vh] md:h-[65vh] lg:h-[80vh]">
@@ -823,9 +761,23 @@
                     </button>
                 </div>
 
-                <div id="modal-thumbnails"
-                    class="h-16 md:h-24 shrink-0 flex gap-2 md:gap-4 overflow-x-auto hide-scrollbar snap-x pb-2 items-center">
-                    <!-- 動態生成 -->
+                <div class="relative mx-auto w-fit flex items-center justify-center">
+                    <!-- Left Arrow -->
+                    <button id="thumb-prev-btn" onclick="scrollThumbnails(-1)"
+                        class="hidden absolute -left-8 md:-left-12 hover-target text-miku p-1 hover:bg-miku/10 rounded-full transition-colors flex items-center justify-center shrink-0 z-10">
+                        <i data-lucide="chevron-left" class="w-6 h-6 md:w-8 md:h-8 pointer-events-none"></i>
+                    </button>
+
+                    <div id="modal-thumbnails"
+                        class="h-16 md:h-24 mx-auto w-[23rem] md:w-[35rem] shrink-0 flex gap-2 md:gap-4 overflow-x-auto hide-scrollbar md:snap-x pb-2 items-center justify-start bg-tokyo/95 p-2 rounded clip-angled-sm border border-white/5 scroll-smooth relative z-0">
+                        <!-- 動態生成 -->
+                    </div>
+
+                    <!-- Right Arrow -->
+                    <button id="thumb-next-btn" onclick="scrollThumbnails(1)"
+                        class="hidden absolute -right-8 md:-right-12 hover-target text-miku p-1 hover:bg-miku/10 rounded-full transition-colors flex items-center justify-center shrink-0 z-10">
+                        <i data-lucide="chevron-right" class="w-6 h-6 md:w-8 md:h-8 pointer-events-none"></i>
+                    </button>
                 </div>
             </div>
 
@@ -1277,7 +1229,7 @@
             thumbnailContainer.innerHTML = '';
             images.forEach((src, index) => {
                 const btn = document.createElement('button');
-                btn.className = `hover-target w-16 md:w-24 h-full snap-center shrink-0 border-2 clip-angled-sm overflow-hidden transition-all duration-300 ${index === currentImageIndex ? 'thumb-active border-miku opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`;
+                btn.className = `hover-target w-16 md:w-24 h-full md:snap-center shrink-0 border-2 clip-angled-sm overflow-hidden transition-all duration-300 ${index === currentImageIndex ? 'thumb-active border-miku opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`;
                 btn.onclick = () => { currentImageIndex = index; updateModalImage(); };
 
                 btn.addEventListener('mouseenter', () => document.body.classList.add('cursor-hovering'));
@@ -1303,8 +1255,49 @@
                     btn.classList.add('border-transparent', 'opacity-50');
                 }
             });
+            setTimeout(updateScrollButtons, 50);
         }
 
+        function scrollThumbnails(direction) {
+            // Scroll by roughly 2-3 thumbnails depending on screen size
+            const scrollAmount = window.innerWidth < 768 ? 160 : 300;
+            thumbnailContainer.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            setTimeout(updateScrollButtons, 350); // check again after smooth scroll finishes
+        }
+
+        function updateScrollButtons() {
+            const prevBtn = document.getElementById('thumb-prev-btn');
+            const nextBtn = document.getElementById('thumb-next-btn');
+            if (!prevBtn || !nextBtn) return;
+
+            // Allow a small 1px margin of error for fractional pixel rounding in some browsers
+            if (thumbnailContainer.scrollWidth <= thumbnailContainer.clientWidth + 2) {
+                // No scroll needed at all
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+                return;
+            }
+
+            // Check if we can scroll left
+            if (thumbnailContainer.scrollLeft > 2) {
+                prevBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+            }
+
+            // Check if we can scroll right
+            if (thumbnailContainer.scrollLeft < thumbnailContainer.scrollWidth - thumbnailContainer.clientWidth - 2) {
+                nextBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        // Listen to native scroll to update buttons dynamically
+        thumbnailContainer.addEventListener('scroll', updateScrollButtons);
+
+        // Also check on window resize
+        window.addEventListener('resize', updateScrollButtons);
         function prevModalImage(e) { e.stopPropagation(); const data = projectData[currentProjectKey]; if (!data) return; currentImageIndex = (currentImageIndex - 1 + data.images.length) % data.images.length; updateModalImage(); }
         function nextModalImage(e) { e.stopPropagation(); const data = projectData[currentProjectKey]; if (!data) return; currentImageIndex = (currentImageIndex + 1) % data.images.length; updateModalImage(); }
     </script>
